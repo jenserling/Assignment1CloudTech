@@ -13,6 +13,10 @@ type University struct {
 	Country  string   `json:"country"`
 	AlphaTwo string   `json:"alpha_two_code"`
 	WebPages []string `json:"web_pages"`
+	Map      struct {
+		OpenStreetMaps string `json:"openstreetmaps"`
+	} `json:"maps"`
+	Languages map[string]string `json:"languages"`
 }
 
 // uniRequest is a function that sends HTTP GET request to the universities API

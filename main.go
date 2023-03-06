@@ -28,24 +28,42 @@ func countryEndpoint(w http.ResponseWriter, r *http.Request) {
 func uniEndpoint(w http.ResponseWriter, r *http.Request) {
 
 	// Parse the language from the request path
-	parts := strings.Split(r.URL.Path, "/")
-	name := strings.ToLower(parts[len(parts)-2])
-	searchSimilarUniversities(name, "no")
-
+	name := r.URL.Query().Get("name")
+	country := r.URL.Query().Get("country")
+	searchSimilarUniversities(name, country)
 }
 
 // Handler function for /universities/{name} endpoint
 func uniEndpoints(w http.ResponseWriter, r *http.Request) {
-	// Parse the university name from the request path
-	parts := strings.Split(r.URL.Path, "/")
-	name := strings.ToLower(parts[len(parts)-2])
+	// Parse the query string
+	name := r.URL.Query().Get("name")
+	country := r.URL.Query().Get("country")
+	showSimilar := r.URL.Query().Get("similar")
 
 	// Get the university details from the API
-	universities, err := searchUniByNameAndCountry(name, "no")
+	universities, err := searchUniByNameAndCountry(name, country)
 	if err != nil {
 		http.Error(w, "Error fetching university data", http.StatusInternalServerError)
 		log.Printf("Error fetching university data: %v", err)
 		return
+	}
+
+	if showSimilar == "true" {
+
+		/* similarUniversities, err := searchSimilarUniversities(name, country)
+		if err != nil {
+			http.Error(w, "Error fetching university data", http.StatusInternalServerError)
+			log.Printf("Error fetching university data: %v", err)
+			return
+
+
+			uniResults := nil // merger similarUniversities og universites
+
+
+			json.NewEncoder(w).Encode(uniResults) */
+
+		//Merge universities + similarUnis. og returer. searchSimilarUniversities
+
 	}
 
 	// Return the university details in JSON format
