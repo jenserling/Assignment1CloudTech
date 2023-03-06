@@ -23,19 +23,23 @@
 ## Install
 
 ```sh
-npm install
+Coming soon 
 ```
 
 ## Usage
 
 ```sh
-npm run start
+Go to https://jensapiv1.onrender.com
 ```
 
 ## Run tests
 
 ```sh
-npm run test
+Test University and country
+
+Example: https://jensapiv1.onrender.com/uniandcuntry/?name=Middle East Technical University&country=Turkey
+
+https://jensapiv1.onrender.com/uniandcuntry/?name=NameOfUniversity&country=NameOfCountry
 ```
 
 ## Author

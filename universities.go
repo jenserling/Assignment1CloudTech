@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"net/url"
 )
@@ -75,11 +76,45 @@ func searchSimilarUniversities(name string, countryCode string) ([]University, e
 	return results, nil
 }
 
-/*
-To do list
+// Handler function for /universities/{name} endpoint
+func uniEndpoint(w http.ResponseWriter, r *http.Request) {
 
-1.  Lage en getUniversity basert på navn og/eller land
+	// Parse the language from the request path
+	name := r.URL.Query().Get("name")
+	country := r.URL.Query().Get("country")
+	searchUniByNameAndCountry(name, country)
+}
 
-2. Search similar universities.. Måhuske å legge inn navn og landekode for første uni. dette må legges inn i api søket i postman
+// Handler function for /universities/{name} endpoint
+func uniEndpoints(w http.ResponseWriter, r *http.Request) {
+	// Parse the query string
+	name := r.URL.Query().Get("name")
+	country := r.URL.Query().Get("country")
+	showSimilar := r.URL.Query().Get("similar")
 
-*/
+	// Get the university details from the API
+	universities, err := searchUniByNameAndCountry(name, country)
+	if err != nil {
+		http.Error(w, "Error fetching university data", http.StatusInternalServerError)
+		log.Printf("Error fetching university data: %v", err)
+		return
+	}
+
+	if showSimilar == "true" {
+
+		similarUniversities, err := searchSimilarUniversities(name, country)
+		if err != nil {
+			http.Error(w, "Error fetching university data", http.StatusInternalServerError)
+			log.Printf("Error fetching university data: %v", err)
+			return
+
+			uniResults := append(universities, similarUniversities...)
+
+			json.NewEncoder(w).Encode(uniResults)
+
+		}
+	}
+
+	// Return the university details in JSON format
+	json.NewEncoder(w).Encode(universities)
+}

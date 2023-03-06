@@ -7,8 +7,7 @@ import (
 	"net/url"
 )
 
-//XXXXXXFunker ikke ettersom den ikke returnerer noe i postman
-
+// searches for universities with a given name and country using the Hipolabs API
 func searchUniByNameAndCountry(name, country string) ([]University, error) {
 	// build the URL with the query parameters
 	baseURL := "http://universities.hipolabs.com/search"

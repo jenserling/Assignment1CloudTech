@@ -3,7 +3,9 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
+	"strings"
 )
 
 // Json formatting for requested data from API
@@ -109,57 +111,18 @@ func getCountry(countryCode string) (Country, error) {
 	return results, err
 }
 
-// XXXXXX Trengs ikke?
+func countryEndpoint(w http.ResponseWriter, r *http.Request) {
+	// Parse the country code from the request path
+	parts := strings.Split(r.URL.Path, "/")
+	countryCode := strings.ToUpper(parts[len(parts)-2])
 
-func getNeighboringCountries(countryCode string) ([]string, error) {
-	// Use a map to keep track of neighboring countries
-	neighbors := map[string]bool{}
-
-	// Make a request to the REST Countries API to get information about the specified country
-	resp, err := countryRequest("alpha", countryCode)
+	country, err := getCountry(countryCode)
 
 	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	// Decode the JSON response
-	var countryData map[string]interface{}
-	if err := json.NewDecoder(resp.Body).Decode(&countryData); err != nil {
-		return nil, err
+		http.Error(w, "Error fetching country data", http.StatusInternalServerError)
+		log.Printf("Error fetching country data: %v", err)
+		return
 	}
 
-	// Get the neighboring countries from the response data
-	borders := countryData["borders"].([]interface{})
-	for _, border := range borders {
-		// Convert the border to a string
-		b := border.(string)
-
-		// Make a request to the REST Countries API to get information about the neighboring country
-		resp, err := countryRequest("alpha", b)
-		if err != nil {
-			return nil, err
-		}
-		defer resp.Body.Close()
-
-		// Decode the JSON response
-		var countryData map[string]interface{}
-		if err := json.NewDecoder(resp.Body).Decode(&countryData); err != nil {
-			return nil, err
-		}
-
-		// Get the country code of the neighboring country
-		alpha2 := countryData["alpha2Code"].(string)
-
-		// Add the neighboring country to the list of neighbors
-		neighbors[alpha2] = true
-	}
-
-	// Convert the map of neighbors to a slice of country codes
-	var result []string
-	for key := range neighbors {
-		result = append(result, key)
-	}
-
-	return result, nil
+	json.NewEncoder(w).Encode(country)
 }
